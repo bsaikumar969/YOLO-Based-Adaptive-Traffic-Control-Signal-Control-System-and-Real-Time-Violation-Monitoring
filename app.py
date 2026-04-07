@@ -203,26 +203,17 @@ if start_btn:
         output_path="outputs/output.avi",
         progress_callback=update_progress
     )
-    # 🔥 ADD THIS
-    st.session_state["output_path"] = output_path
-    st.session_state["excel_path"] = excel_path
-    st.session_state["violation_dir"] = violation_dir
 
     system_state.success("🟢 Controller stopped")
 
-    if "output_path" in st.session_state:
-
-        output_path = st.session_state["output_path"]
-        excel_path = st.session_state["excel_path"]
-        violation_dir = st.session_state["violation_dir"]
+    if os.path.exists(output_path):
     
         # 🎥 Video
-        if output_path and os.path.exists(output_path):
-            st.download_button(
-                "⬇ Download Output Video",
-                data=open(output_path, "rb"),
-                file_name="traffic_output.avi"
-            )
+        st.download_button(
+            "⬇ Download Output Video",
+            data=open(output_path, "rb"),
+            file_name="traffic_output.avi"
+        )
     
         # 📊 Excel
         if excel_path and os.path.exists(excel_path):
@@ -241,8 +232,7 @@ if start_btn:
         with zipfile.ZipFile(zip_path, "w") as zipf:
             for file in os.listdir(violation_dir):
                 file_path = os.path.join(violation_dir, file)
-                if os.path.isfile(file_path):
-                    zipf.write(file_path, file)
+                zipf.write(file_path, file)
     
         if os.path.exists(zip_path):
             with open(zip_path, "rb") as f:
@@ -251,6 +241,7 @@ if start_btn:
                     data=f,
                     file_name="violations.zip"
                 )
+
 if stop_btn:
     system_state.warning("🛑 Controller stopped by user")
 
