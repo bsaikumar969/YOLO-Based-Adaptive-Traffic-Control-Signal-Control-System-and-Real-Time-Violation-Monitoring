@@ -646,12 +646,7 @@ def run_traffic_system(
                                 "image_link": f'=HYPERLINK("{image_path}", "Open Image")'
                             })
 
-                            df = pd.DataFrame(violation_log)
-
-                            excel_path = os.path.join(
-                                os.path.abspath("violations"),
-                                "violation_log_live.xlsx"
-                            )
+                          
 
                             df.to_excel(excel_path, index=False, engine="xlsxwriter")
 
