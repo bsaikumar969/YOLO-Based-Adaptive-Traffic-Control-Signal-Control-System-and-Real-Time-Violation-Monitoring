@@ -96,7 +96,7 @@ if st.button("Run System"):
 import os
 import streamlit as st
 from backend.traffic_engine import run_traffic_system
-
+import zipfile
 # -------------------------------------------------
 # PAGE CONFIG
 # -------------------------------------------------
@@ -197,7 +197,7 @@ if start_btn:
                 unsafe_allow_html=True
             )
 
-    output_path = run_traffic_system(
+    result = run_traffic_system(
         lane_paths=lane_paths,
         yolo_weight=model_path,
         output_path="outputs/output.avi",
@@ -206,11 +206,32 @@ if start_btn:
 
     system_state.success("🟢 Controller stopped")
 
-    if os.path.exists(output_path):
+    if result and os.path.exists(result["video"]):
+
+        zip_path = "outputs/traffic_results.zip"
+    
+        with zipfile.ZipFile(zip_path, 'w') as zipf:
+    
+            # Add video
+            zipf.write(result["video"], arcname="output_video.avi")
+    
+            # Add excel
+            if result["excel"] and os.path.exists(result["excel"]):
+                zipf.write(result["excel"], arcname="violations.xlsx")
+    
+            # Add images
+            if result["images_folder"]:
+                for root, dirs, files in os.walk(result["images_folder"]):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        zipf.write(file_path, arcname=f"violations/{file}")
+    
+        st.success("📦 Ready! Download all results")
+    
         st.download_button(
-            "⬇ Download Output Video",
-            data=open(output_path, "rb"),
-            file_name="traffic_output.avi"
+            "⬇ Download All Results (Video + Excel + Images)",
+            data=open(zip_path, "rb"),
+            file_name="traffic_results.zip"
         )
 
 if stop_btn:
