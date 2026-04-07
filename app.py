@@ -197,7 +197,7 @@ if start_btn:
                 unsafe_allow_html=True
             )
 
-    output_path = run_traffic_system(
+    output_path, excel_path, violation_dir = run_traffic_system(
         lane_paths=lane_paths,
         yolo_weight=model_path,
         output_path="outputs/output.avi",
@@ -206,12 +206,41 @@ if start_btn:
 
     system_state.success("🟢 Controller stopped")
 
-    if os.path.exists(output_path):
-        st.download_button(
-            "⬇ Download Output Video",
-            data=open(output_path, "rb"),
-            file_name="traffic_output.avi"
-        )
+   if os.path.exists(output_path):
+
+    # 🎥 Video
+    st.download_button(
+        "⬇ Download Output Video",
+        data=open(output_path, "rb"),
+        file_name="traffic_output.avi"
+    )
+
+    # 📊 Excel
+    if excel_path and os.path.exists(excel_path):
+        with open(excel_path, "rb") as f:
+            st.download_button(
+                "📊 Download Violation Report",
+                data=f,
+                file_name="violation_report.xlsx"
+            )
+
+    # 📸 Images ZIP
+    import zipfile
+
+    zip_path = "violations.zip"
+
+    with zipfile.ZipFile(zip_path, "w") as zipf:
+        for file in os.listdir(violation_dir):
+            file_path = os.path.join(violation_dir, file)
+            zipf.write(file_path, file)
+
+    if os.path.exists(zip_path):
+        with open(zip_path, "rb") as f:
+            st.download_button(
+                "📸 Download Violation Images",
+                data=f,
+                file_name="violations.zip"
+            )
 
 if stop_btn:
     system_state.warning("🛑 Controller stopped by user")
