@@ -774,4 +774,19 @@ def run_traffic_system(
     else:
         print("[INFO] No violations detected")
 
-    return output_path
+    # ================= RETURN ALL OUTPUTS =================
+
+    violation_folder = os.path.abspath("violations")
+    
+    excel_path = None
+    if len(violation_log) > 0:
+        excel_path = os.path.join(
+            os.path.abspath("violations"),
+            f"violation_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        )
+    
+    return {
+        "video": output_path,
+        "excel": excel_path,
+        "images_folder": violation_folder
+    }
