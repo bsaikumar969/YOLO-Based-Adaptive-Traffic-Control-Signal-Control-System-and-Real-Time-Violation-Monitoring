@@ -206,7 +206,7 @@ if start_btn:
 
     system_state.success("🟢 Controller stopped")
 
-       if os.path.exists(output_path):
+    if os.path.exists(output_path):
     
         # 🎥 Video
         st.download_button(
