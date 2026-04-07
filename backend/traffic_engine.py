@@ -643,11 +643,17 @@ def run_traffic_system(
                                 "class": cls_name,
                                 "timestamp_sec": round(frame_idx / fps, 2),
                                 "image_file": image_filename,
-                                "image_file": image_filename
+                                "image_link": f'=HYPERLINK("{image_path}", "Open Image")'
                             })
 
-                          
+                            df = pd.DataFrame(violation_log)
 
+                            excel_path = os.path.join(
+                                os.path.abspath("violations"),
+                                "violation_log_live.xlsx"
+                            )
+
+                            df.to_excel(excel_path, index=False, engine="xlsxwriter")
 
                             violation_img = frame.copy()
 
@@ -669,8 +675,7 @@ def run_traffic_system(
                                 3
                             )
 
-                            if violation_img is not None and violation_img.size > 0:
-                                cv2.imwrite(image_path, violation_img)
+                            cv2.imwrite(image_path, violation_img)
 
             frames[ln] = frame
 
@@ -768,25 +773,5 @@ def run_traffic_system(
 
     else:
         print("[INFO] No violations detected")
-    
-    # ================= FINAL SAVE =================
-    excel_path = None
-    
-    if len(violation_log) > 0:
-    
-        df = pd.DataFrame(violation_log)
-    
-        excel_path = os.path.join(
-            os.path.abspath("violations"),
-            f"violation_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
-        )
-    
-        df.to_excel(excel_path, index=False)
-    
-        print(f"[INFO] Violation log saved to: {excel_path}")
-    
-    else:
-        print("[INFO] No violations detected")
-    
-    # ================= RETURN =================
-    return output_path, excel_path, os.path.abspath("violations")
+
+    return output_path
