@@ -6,4 +6,4 @@ torch
 torchvision
 pandas
 xlsxwriter
-
+lap>=0.4.0
